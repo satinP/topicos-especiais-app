@@ -7,6 +7,8 @@ import SquirtleScreen from '../screens/SquirtleScreen'
 import PokemonScreen from '../screens/PokemonScreen'
 import TodoListScreen from '../screens/TodoListScreen'
 
+// Tipagem para as rotas do Squirtle e Pokemon, com parmâmetros
+
 export type PokemonStackParamList = {
   Squirtle: undefined
   Pokemon: {
@@ -27,6 +29,8 @@ const pokemonScreenOptionStyle: NativeStackNavigationOptions = {
   headerTitleAlign: 'center',
 }
 
+// Main stack, rotas do Squirtle e Pokemon
+
 const MainStackNavigator = () => {
   return (
     <PokemonStack.Navigator screenOptions={pokemonScreenOptionStyle}>
@@ -44,8 +48,6 @@ const MainStackNavigator = () => {
   )
 }
 
-// Tab
-
 export type ToDoStackParamList = {
   TodoList: undefined
 }
@@ -62,6 +64,8 @@ const todoScreenOptionStyle: NativeStackNavigationOptions = {
   },
   headerTitleAlign: 'center',
 }
+
+// TodoList Stack, rotas daTodoList
 
 const ToDoListStackNavigator = () => {
   return (

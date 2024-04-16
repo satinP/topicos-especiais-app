@@ -14,12 +14,14 @@ import PokemonImage from '../components/PokemonImage'
 import { Pokemon } from '../types/pokeapi/pokemon'
 import { PokemonStackParamList } from '../navigation/StackNavigator'
 
+// Tipagem para as props da tela Pokemon, com as props de navegação 
 type SquirtleProps = NativeStackScreenProps<PokemonStackParamList, 'Squirtle'>
 
 const SquirtleScreen = ({ navigation }: SquirtleProps) => {
   const [squirtleData, setSquirtleData] = React.useState<Pokemon | null>(null)
   const [loading, setLoading] = React.useState(true)
 
+  // Busca dados do Squirtle na API
   const fetchSquirtleData = async () => {
     try {
       const response = await fetch(
@@ -34,6 +36,7 @@ const SquirtleScreen = ({ navigation }: SquirtleProps) => {
     }
   }
 
+  // Dispara a busca dos dados do Squirtle ao montar o componente
   React.useEffect(() => {
     fetchSquirtleData()
   }, [])

@@ -4,6 +4,7 @@ import { Pokemon } from '../types/pokeapi/pokemon'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { PokemonStackParamList } from '../navigation/StackNavigator'
 
+// Tipagem para as props da tela Pokemon, com as props de navegação 
 type PokemonProps = NativeStackScreenProps<PokemonStackParamList, 'Pokemon'>
 
 const PokemonScreen = ({ route }: PokemonProps) => {
@@ -11,6 +12,7 @@ const PokemonScreen = ({ route }: PokemonProps) => {
   const [pokemonData, setPokdemonData] = React.useState<Pokemon | null>(null)
   const [loading, setLoading] = React.useState(true)
 
+  // Busca dados do Pokemon na API
   const fetchPokemonData = async () => {
     const url = `https://pokeapi.co/api/v2/pokemon/${pokemon?.toLowerCase()}`
     console.log(url)
@@ -25,6 +27,7 @@ const PokemonScreen = ({ route }: PokemonProps) => {
     }
   }
 
+  // Dispara a busca dos dados do Pokemon ao montar o componente
   React.useEffect(() => {
     fetchPokemonData()
   }, [])
