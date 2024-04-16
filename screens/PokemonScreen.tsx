@@ -1,34 +1,33 @@
-import React from 'react';
-import {
-  View,
-  Image,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
-import { Pokemon } from '../types/pokemon';
+import React from 'react'
+import { View, Image, StyleSheet, ActivityIndicator } from 'react-native'
+import { Pokemon } from '../types/pokeapi/pokemon'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { PokemonStackParamList } from '../navigation/StackNavigator'
 
-const SquirtlePage = ({ route }) => {
-  const { pokemon } = route.params;
-  const [squirtleData, setSquirtleData] = React.useState<Pokemon | null>(null);
-  const [loading, setLoading] = React.useState(true);
+type PokemonProps = NativeStackScreenProps<PokemonStackParamList, 'Pokemon'>
 
-  const fetchSquirtleData = async () => {
-    const url = `https://pokeapi.co/api/v2/pokemon/${pokemon.toLowerCase()}`;
-    console.log(url);
+const PokemonScreen = ({ route }: PokemonProps) => {
+  const { pokemon } = route.params
+  const [pokemonData, setPokdemonData] = React.useState<Pokemon | null>(null)
+  const [loading, setLoading] = React.useState(true)
+
+  const fetchPokemonData = async () => {
+    const url = `https://pokeapi.co/api/v2/pokemon/${pokemon?.toLowerCase()}`
+    console.log(url)
     try {
-      const response = await fetch(url);
-      const data = await response.json();
-      setSquirtleData(data);
+      const response = await fetch(url)
+      const data = await response.json()
+      setPokdemonData(data)
     } catch (error) {
-      console.error('Erro ao buscar dados do Squirtle:', error);
+      console.error('Erro ao buscar dados do Pokemon:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   React.useEffect(() => {
-    fetchSquirtleData();
-  }, []);
+    fetchPokemonData()
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -37,15 +36,15 @@ const SquirtlePage = ({ route }) => {
           <ActivityIndicator size="large" color="#007bff" />
         </View>
       )}
-      {squirtleData && (
+      {pokemonData && (
         <Image
           style={styles.image}
-          source={{ uri: squirtleData.sprites.front_default }}
+          source={{ uri: pokemonData.sprites.front_default }}
         />
       )}
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -56,8 +55,7 @@ const styles = StyleSheet.create({
   image: {
     width: 80,
     height: 100,
-    textAlign: 'center',
   },
-});
+})
 
-export default SquirtlePage;
+export default PokemonScreen

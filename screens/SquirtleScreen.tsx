@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   View,
   Text,
@@ -7,36 +7,36 @@ import {
   Linking,
   ActivityIndicator,
   TouchableOpacity,
-} from 'react-native';
-import { RootStackParamList } from '../App';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Card from '../components/Card';
-import PokemonImage from '../components/PokemonImage';
-import { Pokemon } from '../types/pokemon';
+} from 'react-native'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import Card from '../components/Card'
+import PokemonImage from '../components/PokemonImage'
+import { Pokemon } from '../types/pokeapi/pokemon'
+import { PokemonStackParamList } from '../navigation/StackNavigator'
 
-type SquirtleProps = NativeStackScreenProps<RootStackParamList, 'Squirtle'>;
+type SquirtleProps = NativeStackScreenProps<PokemonStackParamList, 'Squirtle'>
 
 const SquirtleScreen = ({ navigation }: SquirtleProps) => {
-  const [squirtleData, setSquirtleData] = React.useState<Pokemon | null>(null);
-  const [loading, setLoading] = React.useState(true);
+  const [squirtleData, setSquirtleData] = React.useState<Pokemon | null>(null)
+  const [loading, setLoading] = React.useState(true)
 
   const fetchSquirtleData = async () => {
     try {
       const response = await fetch(
         'https://pokeapi.co/api/v2/pokemon/squirtle/'
-      );
-      const data = await response.json();
-      setSquirtleData(data);
+      )
+      const data = await response.json()
+      setSquirtleData(data)
     } catch (error) {
-      console.error('Erro ao buscar dados do Squirtle:', error);
+      console.error('Erro ao buscar dados do Squirtle:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   React.useEffect(() => {
-    fetchSquirtleData();
-  }, []);
+    fetchSquirtleData()
+  }, [])
 
   return (
     <ScrollView style={styles.container}>
@@ -52,7 +52,10 @@ const SquirtleScreen = ({ navigation }: SquirtleProps) => {
               <>
                 <PokemonImage uri={squirtleData.sprites.front_default} />
                 <Text>{`Squirtle é um Pokémon do tipo ${squirtleData.types[0].type.name}.`}</Text>
-                <Text>É o Pokémon inicial da região de Kanto e evolui para Wartortle.</Text>
+                <Text>
+                  É o Pokémon inicial da região de Kanto e evolui para
+                  Wartortle.
+                </Text>
               </>
             )}
           </>
@@ -110,7 +113,8 @@ const SquirtleScreen = ({ navigation }: SquirtleProps) => {
                 await Linking.openURL(
                   'https://www.pokemon.com/br/pokedex/squirtle'
                 )
-              }>
+              }
+            >
               Pokédex - Squirtle
             </Text>
           </Text>
@@ -122,38 +126,45 @@ const SquirtleScreen = ({ navigation }: SquirtleProps) => {
                 await Linking.openURL(
                   'https://bulbapedia.bulbagarden.net/wiki/Squirtle_(Pok%C3%A9mon)'
                 )
-              }>
+              }
+            >
               Bulbapedia - Squirtle
             </Text>
           </Text>
         </Card>
 
-        <Card title="Evolução" style={[styles.section, styles.evolution]}>
+        <Card
+          title="Evolução"
+          style={StyleSheet.flatten([styles.section, styles.evolution])}
+        >
           <View style={styles.evolutionImages}>
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('PokemonScreen', {
+                navigation.navigate('Pokemon', {
                   pokemon: 'Squirtle',
                 })
-              }>
+              }
+            >
               <PokemonImage uri="https://assets.pokemon.com/assets/cms2/img/pokedex/detail/007.png" />
               <Text style={styles.evolutionDescription}>1. Squirtle</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('PokemonScreen', {
+                navigation.navigate('Pokemon', {
                   pokemon: 'Wartortle',
                 })
-              }>
+              }
+            >
               <PokemonImage uri="https://assets.pokemon.com/assets/cms2/img/pokedex/detail/008.png" />
               <Text style={styles.evolutionDescription}>2. Wartortle</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() =>
-                navigation.navigate('PokemonScreen', {
+                navigation.navigate('Pokemon', {
                   pokemon: 'Blastoise',
                 })
-              }>
+              }
+            >
               <PokemonImage uri="https://assets.pokemon.com/assets/cms2/img/pokedex/detail/009.png" />
               <Text style={styles.evolutionDescription}>1. Blastoise</Text>
             </TouchableOpacity>
@@ -167,21 +178,23 @@ const SquirtleScreen = ({ navigation }: SquirtleProps) => {
             style={styles.link}
             onPress={async () =>
               await Linking.openURL('mailto:contato@squirtlepage.com')
-            }>
+            }
+          >
             Contato via e-mail
           </Text>
         </Text>
         <Text>
           <Text
             style={styles.link}
-            onPress={async () => await Linking.openURL('tel:+123456789')}>
+            onPress={async () => await Linking.openURL('tel:+123456789')}
+          >
             Telefone: (55) 5555-5555
           </Text>
         </Text>
       </View>
     </ScrollView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -195,11 +208,10 @@ const styles = StyleSheet.create({
   },
   section: {
     backgroundColor: '#f4f4f4',
-    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
     marginBottom: 20,
     padding: 20,
     gap: 10,
-    borderRadius: 5,
+    elevation: 4,
   },
   info: {
     alignItems: 'center',
@@ -228,6 +240,6 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
   },
-});
+})
 
-export default SquirtleScreen;
+export default SquirtleScreen
