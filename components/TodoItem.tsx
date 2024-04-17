@@ -48,7 +48,6 @@ const TodoItem = ({
   todoItem: TodoItemType
   onDelete: (item: TodoItemType) => void
 }) => {
-  console.log('salve')
   return (
     <Swipeable
       renderRightActions={(

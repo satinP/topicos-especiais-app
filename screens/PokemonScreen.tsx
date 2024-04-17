@@ -15,7 +15,7 @@ const PokemonScreen = ({ route }: PokemonProps) => {
   // Busca dados do Pokemon na API
   const fetchPokemonData = async () => {
     const url = `https://pokeapi.co/api/v2/pokemon/${pokemon?.toLowerCase()}`
-    console.log(url)
+
     try {
       const response = await fetch(url)
       const data = await response.json()
