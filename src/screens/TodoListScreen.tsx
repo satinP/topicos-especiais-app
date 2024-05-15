@@ -13,11 +13,11 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ToDoStackParamList } from '../navigation/StackNavigator'
 import Modal from '../components/Modal'
 import TodoItemType from '../types/TodoItem'
-import TodoItem from '../components/TodoItem'
 import { useAsyncStorage } from '../hooks/useAsyncStorage'
+import TodoItemList from '../components/TodoItemList'
+import { storageTodoListKey } from '../utils/constants'
 
-const storageTodoListKey = '@todo-list-key'
-const initialTodoItem: TodoItemType = {id: 1, description: '',  title: ''}
+const initialTodoItem: TodoItemType = { id: 1, description: '', title: '' }
 
 type TodoListScreenProps = NativeStackScreenProps<
   ToDoStackParamList,
@@ -27,9 +27,11 @@ type TodoListScreenProps = NativeStackScreenProps<
 const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
   const [modalVisible, setModalVisible] = React.useState(false)
   const [todoItem, setTodoItem] = React.useState<TodoItemType>(initialTodoItem)
-  console.log("r")
 
-  const [lsTodoItem, setLsTodoItem] = useAsyncStorage<TodoItemType[]>(storageTodoListKey, [])
+  const [lsTodoItem, setLsTodoItem] = useAsyncStorage<TodoItemType[]>(
+    storageTodoListKey,
+    []
+  )
 
   React.useEffect(() => {
     navigation.setOptions({
@@ -73,13 +75,16 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
     setModalVisible(false)
   }
 
-  const handleDeleteItem = (item: TodoItemType) => {
-    const index = lsTodoItem.findIndex((todo) => todo.id === item.id)
+  const handleDeleteItem = React.useCallback(
+    (item: TodoItemType) => {
+      const index = lsTodoItem.findIndex((todo) => todo.id === item.id)
 
-    const todoItemListCopy = lsTodoItem.toSpliced(index, 1)
+      const todoItemListCopy = lsTodoItem.toSpliced(index, 1)
 
-    setLsTodoItem(todoItemListCopy)
-  }
+      setLsTodoItem(todoItemListCopy)
+    },
+    [lsTodoItem]
+  )
 
   return (
     <View style={styles.container}>
@@ -94,7 +99,9 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
           style={styles.input}
           placeholder="Título"
           value={todoItem.title}
-          onChangeText={(textValue) => setTodoItem((prev) => ({ ...prev, title: textValue }))}
+          onChangeText={(textValue) =>
+            setTodoItem((prev) => ({ ...prev, title: textValue }))
+          }
         />
 
         {/* Input para guardar a descrição */}
@@ -102,7 +109,9 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
           style={[styles.input, { minHeight: 80 }]}
           placeholder="Descrição"
           value={todoItem.description}
-          onChangeText={(textValue) => setTodoItem((prev) => ({ ...prev, description: textValue }))}
+          onChangeText={(textValue) =>
+            setTodoItem((prev) => ({ ...prev, description: textValue }))
+          }
           multiline={true}
           numberOfLines={4}
         />
@@ -119,16 +128,7 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
       </Modal>
 
       {/* Lista de tarefas salvas */}
-      <FlatList
-        style={{ width: '100%' }}
-        data={lsTodoItem}
-        renderItem={({ item }) => (
-          <TodoItem todoItem={item} onDelete={handleDeleteItem} />
-        )}
-        keyExtractor={(item, i) => (item.id ?? i).toString()} // Cria key para cada item da lista
-        contentContainerStyle={{ gap: 5, marginTop: 5 }}
-        ListFooterComponent={<View style={{ height: 20 }} />}
-      />
+      <TodoItemList onDelete={handleDeleteItem} />
     </View>
   )
 }
