@@ -128,7 +128,7 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
       </Modal>
 
       {/* Lista de tarefas salvas */}
-      <TodoItemList onDelete={handleDeleteItem} />
+      <TodoItemList key={JSON.stringify(lsTodoItem)} onEdit={handleEditItem} />
     </View>
   )
 }
