@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   View,
-  FlatList,
   Pressable,
   TouchableOpacity,
 } from 'react-native'
@@ -26,6 +25,7 @@ type TodoListScreenProps = NativeStackScreenProps<
 
 const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
   const [modalVisible, setModalVisible] = React.useState(false)
+  const [isEdit, setIsEdit] = React.useState(false)
   const [todoItem, setTodoItem] = React.useState<TodoItemType>(initialTodoItem)
 
   const [lsTodoItem, setLsTodoItem] = useAsyncStorage<TodoItemType[]>(
@@ -37,7 +37,10 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity
-          onPress={() => setModalVisible(true)}
+          onPress={() => {
+            setIsEdit(false)
+            setModalVisible(true)
+          }}
           style={{ padding: 15 }}
         >
           <AntDesign name="pluscircle" size={24} color="darkseagreen" />
@@ -54,6 +57,18 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
 
     if (!lsTodoItem.length) {
       setLsTodoItem([todoItem])
+      setTodoItem(initialTodoItem)
+      setModalVisible(false)
+      return
+    }
+
+    if (isEdit) {
+      const index = lsTodoItem.findIndex((todo) => todo.id === todoItem.id)
+      const todoItemListCopy = [...lsTodoItem]
+
+      todoItemListCopy[index] = todoItem
+
+      setLsTodoItem(todoItemListCopy)
       setTodoItem(initialTodoItem)
       setModalVisible(false)
       return
@@ -86,12 +101,24 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
     [lsTodoItem]
   )
 
+  const handleEditItem = React.useCallback(
+    (item: TodoItemType) => {
+      setTodoItem(item)
+      setModalVisible(true)
+      setIsEdit(true)
+    },
+    [lsTodoItem]
+  )
+
   return (
     <View style={styles.container}>
       {/* Modal do nosso projeto */}
       <Modal
         modalVisible={modalVisible}
-        onCloseModal={() => setModalVisible(!modalVisible)}
+        onCloseModal={() => {
+          setModalVisible(!modalVisible)
+          setTodoItem(initialTodoItem)
+        }}
         title="Descreva a tarefa"
       >
         {/* Input para guardar o titulo */}
@@ -122,13 +149,19 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
             style={[styles.button, styles.buttonClose]}
             onPress={handleAddItem}
           >
-            <Text style={styles.textStyle}>Adicionar</Text>
+            <Text style={styles.textStyle}>
+              {isEdit ? 'Editar' : 'Adicionar'}
+            </Text>
           </Pressable>
         </View>
       </Modal>
 
       {/* Lista de tarefas salvas */}
-      <TodoItemList key={JSON.stringify(lsTodoItem)} onEdit={handleEditItem} />
+      <TodoItemList
+        key={JSON.stringify(lsTodoItem)}
+        onDelete={handleDeleteItem}
+        onEdit={handleEditItem}
+      />
     </View>
   )
 }

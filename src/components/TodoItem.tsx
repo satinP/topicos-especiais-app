@@ -13,39 +13,66 @@ import TodoItemType from '../types/TodoItem'
 const RightSwipeActions = ({
   item,
   onDelete,
+  onEdit,
   progress,
 }: {
   item: TodoItemType
   onDelete: (item: TodoItemType) => void
+  onEdit: (item: TodoItemType) => void
   progress: Animated.AnimatedInterpolation<number>
 }) => {
   const transform = progress.interpolate({
     inputRange: [0, 1],
-    outputRange: [10, 0],
+    outputRange: [20, 0],
   })
+
   return (
-    <Animated.View
-      style={[
-        styles.item,
-        {
-          backgroundColor: 'lightcoral',
-          alignItems: 'flex-end',
+    <View style={{ flexDirection: 'row', width: 80 }}>
+      <Animated.View
+        style={{
           transform: [{ translateX: transform }],
-        },
-      ]}
-    >
-      <TouchableOpacity onPress={() => onDelete(item)}>
-        <AntDesign name="delete" size={18} color="black" />
-      </TouchableOpacity>
-    </Animated.View>
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => onEdit(item)}
+          style={[
+            styles.item,
+            {
+              backgroundColor: 'lightgreen',
+            },
+          ]}
+        >
+          <AntDesign name="edit" size={18} color="black" />
+        </TouchableOpacity>
+      </Animated.View>
+      <Animated.View
+        style={{
+          transform: [{ translateX: transform }],
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => onDelete(item)}
+          style={[
+            styles.item,
+            {
+              backgroundColor: 'lightcoral',
+            },
+          ]}
+        >
+          <AntDesign name="delete" size={18} color="black" />
+        </TouchableOpacity>
+      </Animated.View>
+    </View>
   )
 }
 
 const TodoItem = ({
   todoItem,
   onDelete,
+  onEdit,
 }: {
   todoItem: TodoItemType
+  onEdit: (item: TodoItemType) => void
   onDelete: (item: TodoItemType) => void
 }) => {
   return (
@@ -56,6 +83,7 @@ const TodoItem = ({
         <RightSwipeActions
           item={todoItem}
           onDelete={onDelete}
+          onEdit={onEdit}
           progress={progressAnimatedValue}
         />
       )}

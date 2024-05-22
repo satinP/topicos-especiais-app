@@ -1,16 +1,20 @@
-import { useState, useEffect } from "react"
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-export const useAsyncStorage = <T>(key: string, initialValue: T): [lsItem: T, setLsItem: (v: T) => void] => {
-  const [localStorageState, setLocalStorageState] = useState<T>(initialValue)
+
+export const useAsyncStorage = <T>(
+  key: string,
+  initialValue: T
+): [lsItem: T, setLsItem: (v: T) => void] => {
+  const [localStorageState, setLocalStorageState] = React.useState<T>(initialValue)
 
   const getLsItem = async () => {
     try {
       const item = await AsyncStorage.getItem(key)
-      const parsedItem = item ? JSON.parse(item) : initialValue;
+      const parsedItem = item ? JSON.parse(item) : initialValue
       setLocalStorageState(parsedItem)
     } catch (e) {
-      console.log("getItem",e)
+      console.log('getItem', e)
     }
   }
 
@@ -19,13 +23,13 @@ export const useAsyncStorage = <T>(key: string, initialValue: T): [lsItem: T, se
       await AsyncStorage.setItem(key, JSON.stringify(value))
       setLocalStorageState(value)
     } catch (e) {
-      console.log("setLocalStorage",e)
+      console.log('setLocalStorage', e)
     }
   }
 
-  useEffect(() => {
+  React.useEffect(() => {
     getLsItem()
-  },[key])
+  }, [key])
 
   return [localStorageState, setLocalStorage]
 }
