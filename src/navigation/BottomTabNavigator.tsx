@@ -13,7 +13,7 @@ const Tab = createBottomTabNavigator<TabParamList>()
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
-      initialRouteName="TodoListTab"
+      initialRouteName="HomeTab"
       screenOptions={({ route }) => ({
         headerShown: false,
         // Customiza ícones da tab bar
