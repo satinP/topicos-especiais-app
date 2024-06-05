@@ -12,11 +12,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ToDoStackParamList } from '../navigation/StackNavigator'
 import Modal from '../components/Modal'
 import TodoItemType from '../types/TodoItem'
-import { useAsyncStorage } from '../hooks/useAsyncStorage'
 import TodoItemList from '../components/TodoItemList'
-import { storageTodoListKey } from '../utils/constants'
 
-const initialTodoItem: TodoItemType = { id: 1, description: '', title: '' }
+const initialTodoItem: TodoItemType = { description: '', title: '' }
 
 type TodoListScreenProps = NativeStackScreenProps<
   ToDoStackParamList,
@@ -27,11 +25,25 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
   const [modalVisible, setModalVisible] = React.useState(false)
   const [isEdit, setIsEdit] = React.useState(false)
   const [todoItem, setTodoItem] = React.useState<TodoItemType>(initialTodoItem)
+  const [todoList, setTodoList] = React.useState<TodoItemType[]>([])
 
-  const [lsTodoItem, setLsTodoItem] = useAsyncStorage<TodoItemType[]>(
-    storageTodoListKey,
-    []
-  )
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchTodos()
+    })
+
+    async function fetchTodos() {
+      try {
+        const res = await fetch('http://localhost:3000/tasks')
+        const data = await res.json()
+        setTodoList(data)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+
+    return unsubscribe
+  }, [navigation])
 
   React.useEffect(() => {
     navigation.setOptions({
@@ -55,60 +67,76 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
       return
     }
 
-    if (!lsTodoItem.length) {
-      setLsTodoItem([todoItem])
-      setTodoItem(initialTodoItem)
-      setModalVisible(false)
-      return
-    }
-
     if (isEdit) {
-      const index = lsTodoItem.findIndex((todo) => todo.id === todoItem.id)
-      const todoItemListCopy = [...lsTodoItem]
+      const index = todoList.findIndex((todo) => todo.id === todoItem.id)
+      try {
+        fetch('http://localhost:3000/tasks/id/' + todoItem.id, {
+          method: 'PATCH',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(todoItem),
+        })
+        const todoItemListCopy = [...todoList]
 
-      todoItemListCopy[index] = todoItem
+        todoItemListCopy[index] = todoItem
 
-      setLsTodoItem(todoItemListCopy)
-      setTodoItem(initialTodoItem)
+        setTodoList(todoItemListCopy)
+        setTodoItem(initialTodoItem)
+      } catch (e) {
+        console.log(e)
+      }
+
       setModalVisible(false)
       return
     }
 
-    const todoItemListCopy = [...lsTodoItem]
-
-    const lastItemIdPlusOne = lsTodoItem[lsTodoItem.length - 1].id + 1
-
-    const newItem: TodoItemType = {
-      ...todoItem,
-      id: lastItemIdPlusOne,
+    try {
+      fetch('http://localhost:3000/tasks', {
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(todoItem),
+      })
+      const todoItemListCopy = [...todoList]
+      todoItemListCopy.push(todoItem)
+      setTodoList(todoItemListCopy)
+      setTodoItem(initialTodoItem)
+    } catch (e) {
+      console.log(e)
     }
 
-    todoItemListCopy.push(newItem)
-
-    setLsTodoItem(todoItemListCopy)
-    setTodoItem(initialTodoItem)
     setModalVisible(false)
   }
 
-  const handleDeleteItem = React.useCallback(
-    (item: TodoItemType) => {
-      const index = lsTodoItem.findIndex((todo) => todo.id === item.id)
+  const handleDeleteItem = (item: TodoItemType) => {
+    const index = todoList.findIndex((todo) => todo.id === todoItem.id)
 
-      const todoItemListCopy = lsTodoItem.toSpliced(index, 1)
+    try {
+      fetch('http://localhost:3000/tasks/id/' + item?.id, {
+        method: 'DELETE',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
 
-      setLsTodoItem(todoItemListCopy)
-    },
-    [lsTodoItem]
-  )
+      const todoItemListCopy = todoList.toSpliced(index, 1)
 
-  const handleEditItem = React.useCallback(
-    (item: TodoItemType) => {
-      setTodoItem(item)
-      setModalVisible(true)
-      setIsEdit(true)
-    },
-    [lsTodoItem]
-  )
+      setTodoList(todoItemListCopy)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const handleEditItem = (item: TodoItemType) => {
+    setTodoItem(item)
+    setModalVisible(true)
+    setIsEdit(true)
+  }
 
   return (
     <View style={styles.container}>
@@ -158,7 +186,8 @@ const TodoListScreen = ({ navigation }: TodoListScreenProps) => {
 
       {/* Lista de tarefas salvas */}
       <TodoItemList
-        key={JSON.stringify(lsTodoItem)}
+        todoList={todoList}
+        key={JSON.stringify(todoList)}
         onDelete={handleDeleteItem}
         onEdit={handleEditItem}
       />

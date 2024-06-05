@@ -2,21 +2,19 @@ import React from 'react'
 import { FlatList, View } from 'react-native'
 import TodoItemType from '../types/TodoItem'
 import TodoItem from './TodoItem'
-import { useAsyncStorage } from '../hooks/useAsyncStorage'
-import { storageTodoListKey } from '../utils/constants'
 
 type TodoItemProps = {
+  todoList: TodoItemType[]
   onDelete: (item: TodoItemType) => void
   onEdit: (item: TodoItemType) => void
 }
 
-const TodoItemList = ({ onDelete, onEdit }: TodoItemProps) => {
-  const [lsTodoItem] = useAsyncStorage<TodoItemType[]>(storageTodoListKey, [])
+const TodoItemList = ({ todoList, onDelete, onEdit }: TodoItemProps) => {
 
   return (
     <FlatList
       style={{ width: '100%' }}
-      data={lsTodoItem}
+      data={todoList}
       renderItem={({ item }) => (
         <TodoItem todoItem={item} onDelete={onDelete} onEdit={onEdit} />
       )}
